@@ -1,4 +1,6 @@
+require 'rubygems'
 require 'id3lib'
+require 'dm-core'
 
 class Catalog < DataMapper::Base
   property :filename, :string
@@ -31,4 +33,4 @@ class Catalog < DataMapper::Base
     end
 end
 
-Catalog.auto_migrate! if !File.exist?('musicbox_development.sqlite3')
+Catalog.auto_migrate! unless File.exist?('musicbox_development.sqlite3')
