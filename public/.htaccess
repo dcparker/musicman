@@ -1,0 +1,3 @@
+
+RewriteEngine On
+RewriteRule ^.*$ balancer://mongrel_cluster%{REQUEST_URI} [P,QSA,L]
