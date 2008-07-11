@@ -1,6 +1,7 @@
 require 'config/server_init'
 
 # Dependencies.
+require 'dm-core'
 use_orm :datamapper
 
 # Merb Config.

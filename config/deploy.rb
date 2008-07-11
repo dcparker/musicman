@@ -23,7 +23,7 @@ desc "Link in the production extras and Migrate the Database ;)"
 task :after_update_code do
   run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
   run "ln -nfs #{shared_path}/config/server_init.rb #{release_path}/config/server_init.rb"
-  # run "ln -nfs #{shared_path}/config/app_config.rb #{release_path}/config/app_config.rb"
+  run "ln -nfs #{shared_path}/config/music.yml #{release_path}/config/music.yml"
   run "ln -nfs #{shared_path}/log #{release_path}/log"
   # run "cp #{shared_path}/bliss/account_sharing.rb #{release_path}/bliss/"
   # run "cp #{shared_path}/bliss/application_controller.rb #{release_path}/bliss/"
