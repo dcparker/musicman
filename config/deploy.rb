@@ -4,20 +4,20 @@ set :user, "mm"
 # ssh_options[:port] = 2222
 ssh_options[:paranoid] = false
 set :scm, :git
-set :repository, "blogic@knowmc.com:/git/statusping.git"
+set :repository, "git@github.com:dcparker/musicman.git"
 
 # If you aren't deploying to /u/apps/#{application} on the target
 # servers (which is the default), you can specify the actual location
 # via the :deploy_to variable:
-set :deploy_to, "/home/blogic/apps/#{application}"
+set :deploy_to, "/mm/apps/#{application}"
 
 # If you aren't using Subversion to manage your source code, specify
 # your SCM below:
 # set :scm, :subversion
 
-role :app, "statusping.com"
-role :web, "statusping.com"
-role :db,  "statusping.com", :primary => true
+role :app, "192.168.1.109"
+role :web, "192.168.1.109"
+role :db,  "192.168.1.109", :primary => true
 
 desc "Link in the production extras and Migrate the Database ;)"
 task :after_update_code do

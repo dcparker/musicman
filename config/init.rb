@@ -1,3 +1,5 @@
+require 'server_init'
+
 # Dependencies.
 use_orm :datamapper
 
