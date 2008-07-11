@@ -6,6 +6,6 @@ class MusicMan < Merb::Controller
   end
 
   def index
-    "Music Man!<br />#{Catalog.count} Songs"
+    "Music Man!<br />Songs..."
   end
 end

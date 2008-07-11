@@ -35,7 +35,7 @@ end
 task :soft_deploy do
   run "cd #{current_path};git pull"
   run "cd #{current_path};merb -k"
-  run "cd #{current_path};merb -d"
+  run "cd #{current_path};merb -d -p 6699"
 end
 
 desc "Merb it up with"
@@ -43,7 +43,7 @@ deploy.task :restart do
   run "cd #{current_path};merb -k"
 # To run message cluster:
   # run "cd #{current_path};env EVENT=1 merb -c 4"
-  run "cd #{current_path};merb -d"
+  run "cd #{current_path};merb -d -p 6699"
 # If you want to run standard mongrel use this:
 # run "cd #{current_path};merb -c 4"
 end
@@ -53,7 +53,7 @@ deploy.task :stop do
 end
 
 deploy.task :start do
-  run "cd #{current_path};merb -d"
+  run "cd #{current_path};merb -d -p 6699"
 end
 
 #Overwrite the default deploy.migrate as it calls: 

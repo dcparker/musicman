@@ -1,16 +1,18 @@
 require 'rubygems'
 require 'id3lib'
 require 'dm-core'
+require 'dm-validations'
 
-class Catalog < DataMapper::Base
-  property :filename, :string
-  property :title,    :string
-  property :artist,   :string
-  property :album,    :string
-  property :track,    :integer
+class Catalog
+  include DataMapper::Resource
+  property :filename, String
+  property :title,    String
+  property :artist,   String
+  property :album,    String
+  property :track,    Integer
 
-  validates_uniqueness_of :filename
-  before_create :load_song_info
+  validates_is_unique :filename
+  before :create, :load_song_info
 
   def file
     File.new(APP[:library_dir] + '/' + filename)
