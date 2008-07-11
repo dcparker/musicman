@@ -22,7 +22,7 @@ role :db,  "192.168.1.109", :primary => true
 desc "Link in the production extras and Migrate the Database ;)"
 task :after_update_code do
   run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
-  run "ln -nfs #{shared_path}/config/init.rb #{release_path}/config/init.rb"
+  run "ln -nfs #{shared_path}/config/server_init.rb #{release_path}/config/server_init.rb"
   # run "ln -nfs #{shared_path}/config/app_config.rb #{release_path}/config/app_config.rb"
   run "ln -nfs #{shared_path}/log #{release_path}/log"
   # run "cp #{shared_path}/bliss/account_sharing.rb #{release_path}/bliss/"
