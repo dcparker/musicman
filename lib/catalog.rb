@@ -5,6 +5,7 @@ require 'dm-validations'
 
 class Catalog
   include DataMapper::Resource
+  property :id, Integer, :serial => true
   property :filename, String
   property :title,    String
   property :artist,   String
