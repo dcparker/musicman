@@ -1,0 +1,13 @@
+---
+# This is a sample database file for the DataMapper ORM
+:development: &defaults
+  :adapter: sqlite3
+  :database: musicbox_development.sqlite3
+
+:test:
+  <<: *defaults
+  :database: musicbox_test.sqlite3
+
+:production:
+  <<: *defaults
+  :database: musicbox_production.sqlite3
