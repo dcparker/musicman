@@ -4,7 +4,7 @@ set :user, "mm"
 # ssh_options[:port] = 2222
 ssh_options[:paranoid] = false
 set :scm, :git
-set :repository, "git@github.com:dcparker/musicman.git"
+set :repository, "git://github.com/dcparker/musicman.git"
 
 # If you aren't deploying to /u/apps/#{application} on the target
 # servers (which is the default), you can specify the actual location
