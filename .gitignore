@@ -1,3 +1,4 @@
 config/server_init.rb
 config/music.yml
 config/database.yml
+musicbox_development.sqlite3
