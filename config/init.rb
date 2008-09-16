@@ -1,14 +1,14 @@
-require 'config/server_init'
+Merb.logger.info "Loading init..."
 
 # Dependencies.
 require 'dm-core'
 use_orm :datamapper
 
+require 'merb-haml'
+
 # Merb Config.
 Merb::Config.use { |c|
-  c[:environment]         = 'production',
-  c[:framework]           = {},
-  c[:log_level]           = 'debug',
+  c[:environment]         = 'development',
   c[:use_mutex]           = false,
   c[:session_store]       = 'cookie',
   c[:session_id_key]      = '_musicbox_session',
@@ -19,7 +19,7 @@ Merb::Config.use { |c|
 }
 
 # App Config.
-APP = YAML.load_file('config/music.yml')
+MUSIC = YAML.load_file('config/music.yml')
 
 # Routes.
 Merb::Router.prepare do |r|

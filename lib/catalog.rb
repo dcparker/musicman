@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'id3lib'
+# require 'id3lib'
 require 'dm-core'
 require 'dm-validations'
 

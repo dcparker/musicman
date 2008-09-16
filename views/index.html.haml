@@ -1,0 +1,22 @@
+
+#previous
+  %a{:href => "javascript:void(0)", :onclick => "$.get('/previous')"} Previous
+#play
+  %a{:href => "javascript:void(0)", :onclick => "$.get('/play')"} Play
+#pause
+  %a{:href => "javascript:void(0)", :onclick => "$.get('/pause')"} Pause
+#next
+  %a{:href => "javascript:void(0)", :onclick => "$.get('/next')"} Next
+
+#volume
+  .floatleft
+    %span{:style => 'font-family:arial;font-size:16pt'} Volume:
+  .floatleft
+    #volume_slider
+      #volume_handle
+
+#songs{:style => "clear:both"}
+  #song-search
+    Search:
+    %input#search{:type => 'search'}
+  #song-results
