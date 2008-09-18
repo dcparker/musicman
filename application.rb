@@ -23,7 +23,9 @@ class MusicMan < Merb::Controller
     playing = {
       :name => Amarok.track_name,
       :position => Amarok.track_position,
-      :length => Amarok.track_length
+      :length => Amarok.track_length,
+      :elapsed => Amarok.elapsed,
+      :remaining => Amarok.remaining
     }
     display(playing, :format => :json)
   end
@@ -44,6 +46,11 @@ class MusicMan < Merb::Controller
 
   def pause
     Amarok.pause!
+    ''
+  end
+
+  def seek
+    Amarok.seek(params[:position])
     ''
   end
 

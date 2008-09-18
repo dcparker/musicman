@@ -7,6 +7,17 @@
       #track_handle
   .floatleft
     %span#remaining{:style => 'font-family:arial;font-size:16pt'}
+%script
+  = "$().ready(function(){updatePlayingIndicator({'name':'#{Amarok.track_name}','position':'#{Amarok.track_position}','length':'#{Amarok.track_length}','elapsed':'#{Amarok.elapsed}','remaining':'#{Amarok.remaining}'})});"
+
+#volume{:style => 'clear:both'}
+  .floatleft
+    %span{:style => 'font-family:arial;font-size:16pt'} Volume:
+  .floatleft
+    #volume_slider
+      #volume_handle
+
+%hr{:style => 'clear:both'}
 
 #previous
   %a{:href => "javascript:void(0)", :onclick => "$.get('/previous')"} Previous
@@ -16,13 +27,6 @@
   %a{:href => "javascript:void(0)", :onclick => "$.get('/pause')"} Pause
 #next
   %a{:href => "javascript:void(0)", :onclick => "$.get('/next')"} Next
-
-#volume
-  .floatleft
-    %span{:style => 'font-family:arial;font-size:16pt'} Volume:
-  .floatleft
-    #volume_slider
-      #volume_handle
 
 #songs{:style => "clear:both"}
   #song-search

@@ -49,3 +49,21 @@ div#volume_handle {
   width:12px;
   background-image:url(../images/slider-handle.gif);
 }
+
+div#track_slider {
+	position:relative;
+  margin:10px;
+  width:200px;
+  height:23px;
+  top:-9px;
+  background-image:url(../images/slider-bg-1.png);
+  background-repeat:no-repeat;
+  background-position:center center;
+}
+
+div#track_handle {
+  position:relative;
+  height:23px;
+  width:12px;
+  background-image:url(../images/slider-handle.gif);
+}

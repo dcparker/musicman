@@ -1,63 +1,51 @@
-# Arguments:
-#   URL(s)                    Files/URLs to open
-# 
-# Options:
-#   -r, --previous            Skip backwards in playlist
-#   -p, --play                Start playing current playlist
-#   -t, --play-pause          Play if stopped, pause if playing
-#   --pause                   Pause playback
-#   -s, --stop                Stop playback
-#   -f, --next                Skip forwards in playlist
-# 
-# Additional options:
-#   -a, --append              Append files/URLs to playlist
-#   -e, --enqueue             See append, available for backwards compatability
-#   --queue                   Queue URLs after the currently playing track
-#   -l, --load                Load URLs, replacing current playlist
-#   -m, --toggle-playlist-window Toggle the Playlist-window
-#   --wizard                  Run first-run wizard
-#   --engine <name>           Use the <name> engine
-#   --cwd <directory>         Base for relative filenames/URLs
-#   --cdplay <device>         Play an AudioCD from <device>
-
 Amarok = Object.new
 class << Amarok
   def play!(url=nil)
     if url
       url.gsub!(/^\./,'')
-      `amarok --queue "#{url}"; amarok --next`
+      `dcop --user guest --session .DCOPserver_El-Aya__0 amarok playlist playMedia "#{url}"`
     end
-    `amarok --play`
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player play`
   end
 
   def play_next(url)
     url.gsub!(/^\./,'')
-    `amarok --queue "#{url}"`
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok playlist queueMedia "#{url}"`
   end
 
   def pause!
     `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player pause`
   end
 
+  def seek(position)
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player seek #{position.to_i}`
+  end
+
   def next!
     `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player next`
   end
   def previous!
-    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player previous`
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player prev`
   end
 
   def track_name
-    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player nowPlaying`
+    Thread.current['track_name'] || Thread.current['track_name'] = `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player nowPlaying`.chomp
   end
   def track_length
-    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player trackTotalTime`
+    Thread.current['track_length'] || Thread.current['track_length'] = `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player trackTotalTime`.to_f
   end
   def track_position
-    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player trackCurrentTime`
+    Thread.current['track_position'] || Thread.current['track_position'] = `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player trackCurrentTime`.to_f
+  end
+  def elapsed
+    "%s:%02d" % [(track_position / 60).to_i, (track_position % 60).to_i]
+  end
+  def remaining
+    "%s:%02d" % [((track_length - track_position) / 60).to_i, ((track_length - track_position) % 60).to_i]
   end
 
   def score
-    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player score`
+    Thread.current['track_score'] || Thread.current['track_score'] = `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player score`.to_f
   end
 
   def scoreDown!
