@@ -16,4 +16,10 @@ class Song
   property :deviceid, Integer
   property :uniqueid, String, :key => true
   property :dir, String
+
+  BASE_URL = './home/guest/Music/'
+
+  def short_url
+    url[BASE_URL.length..-1]
+  end
 end
