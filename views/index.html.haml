@@ -1,3 +1,12 @@
+#now-playing
+  %h4#track_name
+  .floatleft
+    %span#elapsed{:style => 'font-family:arial;font-size:16pt'}
+  .floatleft
+    #track_slider
+      #track_handle
+  .floatleft
+    %span#remaining{:style => 'font-family:arial;font-size:16pt'}
 
 #previous
   %a{:href => "javascript:void(0)", :onclick => "$.get('/previous')"} Previous

@@ -36,13 +36,42 @@ class << Amarok
   end
 
   def pause!
-    `amarok --pause`
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player pause`
   end
 
   def next!
-    `amarok --next`
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player next`
   end
   def previous!
-    `amarok --previous`
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player previous`
+  end
+
+  def track_name
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player nowPlaying`
+  end
+  def track_length
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player trackTotalTime`
+  end
+  def track_position
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player trackCurrentTime`
+  end
+
+  def score
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player score`
+  end
+
+  def scoreDown!
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player setScore #{score - 10}`
+  end
+  def scoreUp!
+    `dcop --user guest --session .DCOPserver_El-Aya__0 amarok player setScore #{score + 10}`
+  end
+
+  def thumbsDown!
+    scoreDown!
+    next!
+  end
+  def thumbsUp!
+    scoreUp!
   end
 end

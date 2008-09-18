@@ -19,6 +19,15 @@ class MusicMan < Merb::Controller
     render :template => 'search', :layout => 'search'
   end
 
+  def now_playing
+    playing = {
+      :name => Amarok.track_name,
+      :position => Amarok.track_position,
+      :length => Amarok.track_length
+    }
+    display(playing, :format => :json)
+  end
+
   def play
     if song = params[:song]
       Amarok.play!(song)
