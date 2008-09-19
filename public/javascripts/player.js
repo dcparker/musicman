@@ -45,8 +45,10 @@ function updatePlayingIndicator(playing){
   $('#track_name').html(player.name);
   player.percent_position = (playing.position / playing.length) * 100;
   if(player.hidden){
+    player.hidden = false;
     $('#now-playing div').show('slow');
   }
+  player.updated = now;
   $("div#track_slider").slider('moveTo', player.percent_position, $('#track_handle'));
 }
 
@@ -57,16 +59,19 @@ function guiUpdate(){
 
 function getNowPlayingUpdate(){
   var now = (new Date()).getTime();
-  if(now < (player.active + 60000)){
+  if(now < (player.active + 20000)){ // hide after 20 seconds
     // Max frequency every 1.2 seconds
     if(now > (player.updated + 1200)){
-      player.updated = now;
       $.getJSON("/now_playing", updatePlayingIndicator);
     }
   }else{
-    console.info("Last active: "+player.active+", Now: "+now);
-    player.hidden = true;
-    $('#now-playing div').hide('slow');
+    // Soon after the last-known song is finished playing, we'll grab the status again to update the song name.
+    if(((player.length - player.position)*1000 + player.updated) < now){
+      $.getJSON("/now_playing", updatePlayingIndicator);
+    } else {
+      player.hidden = true;
+      $('#now-playing div').hide('slow');
+    }
   }
   return now;
 }
@@ -84,8 +89,9 @@ $().ready(function(){
     startValue: 0
   });
   // Stops updating when you've been inactive in the app for over a minute.
-  $('#now-playing').everyTime(4000, 'indicator', getNowPlayingUpdate);
+  $('#now-playing').everyTime(2000, 'indicator', getNowPlayingUpdate);
   // This keeps updating the slider every 2 seconds as long as it notices mouse activity in the app.
   $("body").mousemove(guiUpdate);
+  $("body").click(guiUpdate);
   $("body").keypress(guiUpdate);
 });
