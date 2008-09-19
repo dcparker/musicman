@@ -27,7 +27,7 @@ $().ready(function(){
 });
 
 
-var player = {};
+var player = {'updated':(new Date()).getTime() - 160, 'update':(new Date()).getTime()};
 player.percent_to_position = function(percent){
   return (percent / 100) * player.length;
 };
@@ -44,10 +44,35 @@ function updatePlayingIndicator(playing){
   $('#remaining').html(player.remaining);
   $('#track_name').html(player.name);
   player.percent_position = (playing.position / playing.length) * 100;
+  if(player.hidden){
+    $('#now-playing div').show('slow');
+  }
   $("div#track_slider").slider('moveTo', player.percent_position, $('#track_handle'));
 }
 
+function guiUpdate(){
+  getNowPlayingUpdate();
+  player.active = (new Date()).getTime();
+}
+
+function getNowPlayingUpdate(){
+  var now = (new Date()).getTime();
+  if(now < (player.active + 60000)){
+    // Max frequency every 1.2 seconds
+    if(now > (player.updated + 1200)){
+      player.updated = now;
+      $.getJSON("/now_playing", updatePlayingIndicator);
+    }
+  }else{
+    console.info("Last active: "+player.active+", Now: "+now);
+    player.hidden = true;
+    $('#now-playing div').hide('slow');
+  }
+  return now;
+}
+
 $().ready(function(){
+  player.active = (new Date()).getTime();
   $("div#track_slider").slider({
     handle: 'div#track_handle',
     stop: function(event, ui){
@@ -58,7 +83,9 @@ $().ready(function(){
     },
     startValue: 0
   });
-  $('#now-playing').everyTime(4000, 'indicator', function(){
-    $.getJSON("/now_playing", updatePlayingIndicator);
-  });
+  // Stops updating when you've been inactive in the app for over a minute.
+  $('#now-playing').everyTime(4000, 'indicator', getNowPlayingUpdate);
+  // This keeps updating the slider every 2 seconds as long as it notices mouse activity in the app.
+  $("body").mousemove(guiUpdate);
+  $("body").keypress(guiUpdate);
 });
