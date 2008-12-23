@@ -11,7 +11,8 @@ class PulseAudio
         @items[type] ||= {}
         current = @items[type][index] = {}
       when /(\w+):(.*)/
-      current[$1] = $2.strip
+        current[$1] = $2.strip
+      end
     end
   end
 end
