@@ -3,10 +3,7 @@ use_test :rspec
 use_template_engine :haml
 
 Merb::Config.use { |c|
-  c[:framework] = {
-    :public => [Merb.root / "public", nil],
-    :view => Merb.root / "views"
-  }
+  c[:framework] = { :public => [Merb.root / "public", nil] }
   c[:session_store]       = 'none'
   c[:exception_details]   = true
 	c[:log_level]           = :debug # or error, warn, info or fatal
