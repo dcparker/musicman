@@ -3,12 +3,15 @@ use_test :rspec
 use_template_engine :haml
 
 Merb::Config.use { |c|
-  c[:framework]           = { :public => [Merb.root / "musicman" / "public", nil] }
+  c[:framework] = {
+    :public => [Merb.root / "public", nil],
+    :view => Merb.root / "views"
+  }
   c[:session_store]       = 'none'
   c[:exception_details]   = true
 	c[:log_level]           = :debug # or error, warn, info or fatal
   c[:log_stream]          = STDOUT
-  # or use file for loggine:
+  # or use file for logging:
   # c[:log_file]          = Merb.root / "log" / "merb.log"
 
 	c[:reload_classes]   = true
@@ -21,7 +24,7 @@ MUSIC = {
   :ignore_list_file => 'ignore.list'
 }
 
-# Merb::Bootloader.after_app_loads do
+# Merb::BootLoader.after_app_loads do
 #   DataMapper.setup(:default, 'sqlite3:musicman.sqlite3')
 # end
  
