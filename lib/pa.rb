@@ -49,7 +49,7 @@ class PulseAudio
   end
 
   def clients
-    @items['Client'].collect {|c| Client.new(c)}
+    @items['Client'].collect {|c| Client.new(c)}.reject {|c| c.name == 'pactl'}
   end
   def client(atr={})
     key = atr.keys[0]
