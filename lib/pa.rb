@@ -67,7 +67,7 @@ class PulseAudio
   end
 
   class Sink
-    attr_reader :name, :description, :volume
+    attr_reader :description, :volume
 
     def initialize(sink_attrs)
       @attrs = sink_attrs
@@ -78,6 +78,14 @@ class PulseAudio
 
     def [](key)
       @attrs[key]
+    end
+
+    def name
+      if defined?(MUSIC)
+        MUSIC[:sink_nicknames][@name]
+      else
+        @name
+      end
     end
   end
 
