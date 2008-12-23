@@ -35,6 +35,7 @@ require 'lib/mixer'
 require 'lib/amarok'
 require 'lib/amarok/song'
 require 'lib/amarok/artist'
+require 'lib/pa'
 
 # Controller
 class Musicman < Merb::Controller
