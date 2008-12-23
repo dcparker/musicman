@@ -1,4 +1,8 @@
 class PulseAudio
+  def self.list
+    Thread.current['pactl list'] ||= PulseAudio.new
+  end
+
   attr_reader :items
 
   def initialize
@@ -20,17 +24,37 @@ class PulseAudio
   def modules
     @items['Module']
   end
+  def module(atr={})
+    key = atr.keys[0]
+    val = atr.values[0]
+    modules.select {|s| s[key] == val}[0]
+  end
 
   def sinks
     @items['Sink']
+  end
+  def sink(atr={})
+    key = atr.keys[0]
+    val = atr.values[0]
+    sinks.select {|s| s[key] == val}[0]
   end
 
   def clients
     @items['Client']
   end
+  def client(atr={})
+    key = atr.keys[0]
+    val = atr.values[0]
+    client.select {|s| s[key] == val}[0]
+  end
 
-  def source
+  def sources
     @items['Source']
+  end
+  def source(atr={})
+    key = atr.keys[0]
+    val = atr.values[0]
+    sources.select {|s| s[key] == val}[0]
   end
 end
 
