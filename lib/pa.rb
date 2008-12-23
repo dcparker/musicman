@@ -31,7 +31,7 @@ class PulseAudio
   end
 
   def sinks
-    @items['Sink']
+    @items['Sink'].collect {|s| Sink.new(s)}
   end
   def sink(atr={})
     key = atr.keys[0]
@@ -40,7 +40,7 @@ class PulseAudio
   end
 
   def sink_inputs
-    @items['Sink Input']
+    @items['Sink Input'].collect {|s| SinkInput.new(s)}
   end
   def sink_input(atr={})
     key = atr.keys[0]
@@ -49,7 +49,7 @@ class PulseAudio
   end
 
   def clients
-    @items['Client']
+    @items['Client'].collect {|c| Client.new(c)}
   end
   def client(atr={})
     key = atr.keys[0]
@@ -70,9 +70,14 @@ class PulseAudio
     attr_reader :name, :description, :volume
 
     def initialize(sink_attrs)
+      @attrs = sink_attrs
       @name = sink_attrs['Name']
       @description = sink_attrs['Description']
       @volume = sink_attrs['Volume']
+    end
+
+    def [](key)
+      @attrs[key]
     end
   end
 
@@ -80,10 +85,15 @@ class PulseAudio
     attr_reader :name, :volume
 
     def initialize(sink_input_attrs)
+      @attrs = sink_input_attrs
       @name = sink_input_attrs['Name']
       @client = sink_input_attrs['Client']
       @sink = sink_input_attrs['Sink']
       @volume = sink_input_attrs['Volume']
+    end
+
+    def [](key)
+      @attrs[key]
     end
 
     def client
@@ -99,7 +109,12 @@ class PulseAudio
     attr_reader :name
 
     def initialize(client_attrs)
+      @attrs = client_attrs
       @name = client_attrs['Name']
+    end
+
+    def [](key)
+      @attrs[key]
     end
 
     def sink
