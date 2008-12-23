@@ -18,7 +18,13 @@ Merb::Config.use { |c|
 # App Config.
 MUSIC = {
   :library_dir => '/Users/daniel/Music/iTunes/iTunes Music',
-  :ignore_list_file => 'ignore.list'
+  :ignore_list_file => 'ignore.list',
+  :sink_nicknames => {
+    'alsa_output.hw_0' => 'Downstairs',
+    'alsa_output.hw_1' => 'Upstairs',
+    'alsa_output.hw_2' => 'Downstairs Computer',
+    'combined' => 'Combined'
+  }
 }
 
 # Merb::BootLoader.after_app_loads do

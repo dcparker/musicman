@@ -1,6 +1,10 @@
 #sinks
   - PulseAudio.list.sinks.each do |sink|
-    .sink= sink['Name']
+    .sink
+      = MUSIC[:sink_nicknames][sink['Name']]
+  - PulseAudio.list.sink_inputs.each do |sink_input|
+    .sink_input
+      = sink_input['Name']
 
 #now-playing
   %h4#track_name
