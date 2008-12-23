@@ -1,0 +1,6 @@
+
+# get the index of the sink input from the last mentioned '.*Sink Input #(\d+)'
+pactl list
+pactl move-sink-input [sink-input index] [sink name]
+
+Sink names are currently: internal, external, combined

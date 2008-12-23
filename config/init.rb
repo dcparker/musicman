@@ -19,7 +19,7 @@ Merb::Config.use { |c|
 }
 
 # App Config.
-MUSIC = YAML.load_file('config/music.yml')
+MUSIC = YAML.load_file('config/music.yml') unless defined?(MUSIC)
 
 # Routes.
 Merb::Router.prepare do |r|
