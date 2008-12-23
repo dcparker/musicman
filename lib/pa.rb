@@ -8,12 +8,29 @@ class PulseAudio
       case line
       when /\*\*\*(.+?)\*\*\*/
         type, index = $1.strip.split(/\s+/)
-        @items[type] ||= {}
-        current = @items[type][index] = {}
+        @items[type] ||= []
+        @items[type] << {:index => index}
+        current = @items[type].last
       when /(\w+):(.*)/
         current[$1] = $2.strip
       end
     end
+  end
+
+  def modules
+    @items['Module']
+  end
+
+  def sinks
+    @items['Sink']
+  end
+
+  def clients
+    @items['Client']
+  end
+
+  def source
+    @items['Source']
   end
 end
 
