@@ -76,22 +76,22 @@ function getNowPlayingUpdate(){
   return now;
 }
 
-$().ready(function(){
-  player.active = (new Date()).getTime();
-  $("div#track_slider").slider({
-    handle: 'div#track_handle',
-    stop: function(event, ui){
-      // Only if it's a significant seek action. Also nullifies seeking every time the position is auto-updated.
-      if(ui.value > player.percent_position+1 || ui.value < player.percent_position-1){
-        $.get("/seek?position="+player.percent_to_position(ui.value));
-      }
-    },
-    startValue: 0
-  });
-  // Stops updating when you've been inactive in the app for over a minute.
-  $('#now-playing').everyTime(2000, 'indicator', getNowPlayingUpdate);
-  // This keeps updating the slider every 2 seconds as long as it notices mouse activity in the app.
-  $("body").mousemove(guiUpdate);
-  $("body").click(guiUpdate);
-  $("body").keypress(guiUpdate);
-});
+// $().ready(function(){
+//   player.active = (new Date()).getTime();
+//   $("div#track_slider").slider({
+//     handle: 'div#track_handle',
+//     stop: function(event, ui){
+//       // Only if it's a significant seek action. Also nullifies seeking every time the position is auto-updated.
+//       if(ui.value > player.percent_position+1 || ui.value < player.percent_position-1){
+//         $.get("/seek?position="+player.percent_to_position(ui.value));
+//       }
+//     },
+//     startValue: 0
+//   });
+//   // Stops updating when you've been inactive in the app for over a minute.
+//   $('#now-playing').everyTime(2000, 'indicator', getNowPlayingUpdate);
+//   // This keeps updating the slider every 2 seconds as long as it notices mouse activity in the app.
+//   $("body").mousemove(guiUpdate);
+//   $("body").click(guiUpdate);
+//   $("body").keypress(guiUpdate);
+// });

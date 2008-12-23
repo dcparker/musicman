@@ -1,10 +1,8 @@
 #sinks
   - PulseAudio.list.sinks.each do |sink|
-    .sink
-      = MUSIC[:sink_nicknames][sink['Name']]
+    .sink= sink.name
   - PulseAudio.list.clients.each do |client|
-    .client
-      == #{client.name} == #{client.sink.name}
+    .client== #{client.name} == #{client.sink.name}
 
 #now-playing
   %h4#track_name
