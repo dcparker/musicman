@@ -11,7 +11,7 @@ class PulseAudio
     `pactl list`.each_line do |line|
       case line
       when /\*\*\*(.+?)\*\*\*/
-        type, index = $1.strip.split(/#/)
+        type, index = $1.strip.split(/#/).collect {|s| s.strip}
         @items[type] ||= []
         @items[type] << {:index => index}
         current = @items[type].last
