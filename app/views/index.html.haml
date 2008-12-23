@@ -4,7 +4,7 @@
       = MUSIC[:sink_nicknames][sink['Name']]
   - PulseAudio.list.sink_inputs.each do |sink_input|
     .sink_input
-      = sink_input['Name']
+      == #{sink_input['Name']} == #{MUSIC[:sink_nicknames][PulseAudio.list.sink(:index => sink_input['Sink'])['Name']]}
 
 #now-playing
   %h4#track_name
