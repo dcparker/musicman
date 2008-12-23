@@ -1,6 +1,5 @@
-Mixer = Object.new
-class << Mixer
-  def volume(ctl=nil)
+class Mixer
+  def self.volume(ctl=nil)
     case ctl
     when :up
       volume(volume + 4)

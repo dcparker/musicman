@@ -1,6 +1,0 @@
-%ol
-  - @songs.each do |song|
-    %li.song
-      %a{:href => 'javascript:void(0)', :onclick => "$.get(\"/play\", {\"song\": \"#{song.url}\"})"}= song.short_url
-      = "/"
-      %a{:href => 'javascript:void(0)', :onclick => "$.get(\"/play_next\", {\"song\": \"#{song.url}\"})"} Play Next
