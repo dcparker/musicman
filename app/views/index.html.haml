@@ -2,9 +2,9 @@
   - PulseAudio.list.sinks.each do |sink|
     .sink
       = MUSIC[:sink_nicknames][sink['Name']]
-  - PulseAudio.list.sink_inputs.each do |sink_input|
-    .sink_input
-      == #{sink_input['Name']} == #{MUSIC[:sink_nicknames][PulseAudio.list.sink(:index => sink_input['Sink'])['Name']]}
+  - PulseAudio.list.clients.each do |client|
+    .client
+      == #{client['Name']} == #{MUSIC[:sink_nicknames][PulseAudio.list.sink(:index => PulseAudio.list.sink_input('Name' => client['Name'])['Sink'])['Name']]}
 
 #now-playing
   %h4#track_name

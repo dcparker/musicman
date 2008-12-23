@@ -65,6 +65,51 @@ class PulseAudio
     val = atr.values[0]
     sources.select {|s| s[key] == val}[0]
   end
+
+  class Sink
+    attr_reader :name, :description, :volume
+
+    def initialize(sink_attrs)
+      @name = sink_attrs['Name']
+      @description = sink_attrs['Description']
+      @volume = sink_attrs['Volume']
+    end
+  end
+
+  class SinkInput
+    attr_reader :name, :volume
+
+    def initialize(sink_input_attrs)
+      @name = sink_input_attrs['Name']
+      @client = sink_input_attrs['Client']
+      @sink = sink_input_attrs['Sink']
+      @volume = sink_input_attrs['Volume']
+    end
+
+    def client
+      PulseAudio.list.client(:index => @client)
+    end
+
+    def sink
+      PulseAudio.list.sink(:index => @sink)
+    end
+  end
+
+  class Client
+    attr_reader :name
+
+    def initialize(client_attrs)
+      @name = client_attrs['Name']
+    end
+
+    def sink
+      sink_input.sink
+    end
+
+    def sink_input
+      PulseAudio.list.sink_input('Name' => @name)
+    end
+  end
 end
 
 # *** Module #0 ***
