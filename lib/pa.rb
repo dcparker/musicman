@@ -1,3 +1,20 @@
+MUSIC = {
+  :library_dir => '/Users/daniel/Music/iTunes/iTunes Music',
+  :ignore_list_file => 'ignore.list',
+  :sink_nicknames => {
+    'alsa_output.hw_0' => 'Downstairs',
+    'alsa_output.hw_1' => 'Upstairs',
+    'alsa_output.hw_2' => 'Downstairs Computer',
+    'combined' => 'Combined'
+  },
+  :client_nicknames => [
+    {
+      /TCP\/IP client from 192.168.1.100/ => 'Fenestra'},
+    {
+      /TCP\/IP client from ([\d\.]+)/ => 'Other Computer: %s'}
+  ]
+}
+
 class PulseAudio
   def self.list
     Thread.current['pactl list'] ||= PulseAudio.new
@@ -15,14 +32,14 @@ class PulseAudio
         @items[type] ||= []
         @items[type] << {:index => index}
         current = @items[type].last
-      when /(\w+):(.*)/
-        current[$1] = $2.strip
+      when /(.+?):(.*)/
+        current[$1.strip] = $2.strip
       end
     end
   end
 
   def modules
-    @items['Module']
+    @items['Module'].collect {|m| PAModule.new(m)}
   end
   def module(atr={})
     key = atr.keys[0]
@@ -54,7 +71,7 @@ class PulseAudio
   def client(atr={})
     key = atr.keys[0]
     val = atr.values[0]
-    client.select {|s| s[key] == val}[0]
+    clients.select {|s| s[key] == val}[0]
   end
 
   def sources
@@ -66,18 +83,43 @@ class PulseAudio
     sources.select {|s| s[key] == val}[0]
   end
 
+  module PAThing
+    def [](key)
+      @attrs[key]
+    end
+
+    def index
+      @attrs[:index]
+    end
+  end
+  class PAModule
+    include PAThing
+    attr_reader :name, :argument
+
+    def initialize(module_attrs)
+      @attrs = module_attrs
+      @name = module_attrs['Name']
+      @argument = module_attrs['Argument']
+    end
+  end
+
   class Sink
+    include PAThing
     attr_reader :description, :volume
 
     def initialize(sink_attrs)
       @attrs = sink_attrs
       @name = sink_attrs['Name']
       @description = sink_attrs['Description']
-      @volume = sink_attrs['Volume']
+      @volume = sink_attrs['Volume'].split(/:?%? +/)[1]
     end
 
-    def [](key)
-      @attrs[key]
+    def module
+      PulseAudio.list.module(:index => @attrs['Owner Module'])
+    end
+
+    def volume=(volume)
+      `echo "set-sink-volume #{index} #{65536*volume/100}" | pacmd 1>/dev/null`
     end
 
     def name
@@ -90,6 +132,7 @@ class PulseAudio
   end
 
   class SinkInput
+    include PAThing
     attr_reader :name, :volume
 
     def initialize(sink_input_attrs)
@@ -100,10 +143,6 @@ class PulseAudio
       @volume = sink_input_attrs['Volume']
     end
 
-    def [](key)
-      @attrs[key]
-    end
-
     def client
       PulseAudio.list.client(:index => @client)
     end
@@ -111,9 +150,22 @@ class PulseAudio
     def sink
       PulseAudio.list.sink(:index => @sink)
     end
+
+    def module
+      PulseAudio.list.module(:index => @attrs['Owner Module'])
+    end
+
+    def volume=(volume)
+      `echo "set-sink-input-volume #{index} #{65536*volume/100}" | pacmd 1>/dev/null`
+    end
+
+    def active?
+      @attrs['Buffer Latency'].gsub(/\D/, '').to_i > 0
+    end
   end
 
   class Client
+    include PAThing
     attr_reader :name
 
     def initialize(client_attrs)
@@ -121,8 +173,16 @@ class PulseAudio
       @name = client_attrs['Name']
     end
 
-    def [](key)
-      @attrs[key]
+    def nickname
+      nick = nil
+      MUSIC[:client_nicknames].each do |client_nickname|
+        if @name =~ client_nickname.keys[0]
+          nick = client_nickname.values[0]
+          nick = nick % $~[1..$~.size] if $~.size > 1
+          break
+        end
+      end
+      nick || @name
     end
 
     def sink
@@ -132,331 +192,17 @@ class PulseAudio
     def sink_input
       PulseAudio.list.sink_input('Name' => @name)
     end
+
+    def sink=(sink_name)
+      `pactl move-sink-input #{sink_input.index} #{PulseAudio.list.sink('Name' => sink_name).index}`
+    end
+
+    def network?
+      sink_input.module.name == 'module-simple-protocol-tcp'
+    end
+
+    def active?
+      sink_input.active?
+    end
   end
 end
-
-# *** Module #0 ***
-# Name: module-alsa-sink
-# Argument: device=hw:0
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #1 ***
-# Name: module-alsa-source
-# Argument: device=hw:0
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #2 ***
-# Name: module-alsa-sink
-# Argument: device=hw:1
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #3 ***
-# Name: module-alsa-source
-# Argument: device=hw:1
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #4 ***
-# Name: module-alsa-sink
-# Argument: device=hw:2
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #5 ***
-# Name: module-alsa-source
-# Argument: device=hw:2
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #7 ***
-# Name: module-native-protocol-unix
-# Argument: 
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #8 ***
-# Name: module-simple-protocol-tcp
-# Argument: listen=192.168.1.102 port=4712
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #9 ***
-# Name: module-volume-restore
-# Argument: 
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #10 ***
-# Name: module-default-device-restore
-# Argument: 
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #11 ***
-# Name: module-rescue-streams
-# Argument: 
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #12 ***
-# Name: module-suspend-on-idle
-# Argument: 
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #13 ***
-# Name: module-combine
-# Argument: 
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #14 ***
-# Name: module-rtp-recv
-# Argument: 
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #15 ***
-# Name: module-native-protocol-tcp
-# Argument: auth-anonymous=1
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #16 ***
-# Name: module-esound-protocol-tcp
-# Argument: auth-anonymous=1
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #17 ***
-# Name: module-zeroconf-publish
-# Argument: 
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #18 ***
-# Name: module-gconf
-# Argument: 
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Module #19 ***
-# Name: module-x11-publish
-# Argument: 
-# Usage counter: n/a
-# Auto unload: no
-# 
-# *** Sink #0 ***
-# Name: alsa_output.hw_0
-# Driver: modules/module-alsa-sink.c
-# Description: ALSA PCM on hw:0 (RIPTIDE) via DMA
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Owner Module: 0
-# Volume: 0:  87% 1:  87%
-# Monitor Source: 0
-# Latency: 90249 usec
-# Flags: HW_VOLUME_CTRL LATENCY HARDWARE
-# 
-# *** Sink #1 ***
-# Name: alsa_output.hw_1
-# Driver: modules/module-alsa-sink.c
-# Description: ALSA PCM on hw:1 (ES1371 DAC2/ADC) via DMA
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Owner Module: 2
-# Volume: 0:  70% 1:  70%
-# Monitor Source: 2
-# Latency: 83265 usec
-# Flags: HW_VOLUME_CTRL LATENCY HARDWARE
-# 
-# *** Sink #2 ***
-# Name: alsa_output.hw_2
-# Driver: modules/module-alsa-sink.c
-# Description: ALSA PCM on hw:2 (Intel 82801BA-ICH2) via DMA
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Owner Module: 4
-# Volume: 0: 100% 1: 100%
-# Monitor Source: 4
-# Latency: 89251 usec
-# Flags: HW_VOLUME_CTRL LATENCY HARDWARE
-# 
-# *** Sink #3 ***
-# Name: combined
-# Driver: modules/module-combine.c
-# Description: Simultaneous output to ALSA PCM on hw:0 (RIPTIDE) via DMA, ALSA PCM on hw:1 (ES1371 DAC2/ADC) via DMA, ALSA PCM on hw:2 (Intel 82801BA-ICH2) via DMA
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Owner Module: 13
-# Volume: 0: 100% 1: 100%
-# Monitor Source: 6
-# Latency: 108356 usec
-# Flags: LATENCY 
-# 
-# *** Source #0 ***
-# Name: alsa_output.hw_0.monitor
-# Driver: modules/module-alsa-sink.c
-# Description: Monitor Source of ALSA PCM on hw:0 (RIPTIDE) via DMA
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Owner Module: 0
-# Volume: 0: 100% 1: 100%
-# Monitor of Sink: 0
-# Latency: 0 usec
-# Flags: 
-# 
-# *** Source #1 ***
-# Name: alsa_input.hw_0
-# Driver: modules/module-alsa-source.c
-# Description: ALSA PCM on hw:0 (RIPTIDE) via DMA
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Owner Module: 1
-# Volume: 0: 100% 1: 100%
-# Monitor of Sink: no
-# Latency: 0 usec
-# Flags: HW_VOLUME_CTRL LATENCY HARDWARE
-# 
-# *** Source #2 ***
-# Name: alsa_output.hw_1.monitor
-# Driver: modules/module-alsa-sink.c
-# Description: Monitor Source of ALSA PCM on hw:1 (ES1371 DAC2/ADC) via DMA
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Owner Module: 2
-# Volume: 0: 100% 1: 100%
-# Monitor of Sink: 1
-# Latency: 0 usec
-# Flags: 
-# 
-# *** Source #3 ***
-# Name: alsa_input.hw_1
-# Driver: modules/module-alsa-source.c
-# Description: ALSA PCM on hw:1 (ES1371 DAC2/ADC) via DMA
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Owner Module: 3
-# Volume: 0: 100% 1: 100%
-# Monitor of Sink: no
-# Latency: 0 usec
-# Flags: HW_VOLUME_CTRL LATENCY HARDWARE
-# 
-# *** Source #4 ***
-# Name: alsa_output.hw_2.monitor
-# Driver: modules/module-alsa-sink.c
-# Description: Monitor Source of ALSA PCM on hw:2 (Intel 82801BA-ICH2) via DMA
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Owner Module: 4
-# Volume: 0: 100% 1: 100%
-# Monitor of Sink: 2
-# Latency: 0 usec
-# Flags: 
-# 
-# *** Source #5 ***
-# Name: alsa_input.hw_2
-# Driver: modules/module-alsa-source.c
-# Description: ALSA PCM on hw:2 (Intel 82801BA-ICH2) via DMA
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Owner Module: 5
-# Volume: 0: 100% 1: 100%
-# Monitor of Sink: no
-# Latency: 0 usec
-# Flags: HW_VOLUME_CTRL LATENCY HARDWARE
-# 
-# *** Source #6 ***
-# Name: combined.monitor
-# Driver: modules/module-combine.c
-# Description: Monitor Source of Simultaneous output to ALSA PCM on hw:0 (RIPTIDE) via DMA, ALSA PCM on hw:1 (ES1371 DAC2/ADC) via DMA, ALSA PCM on hw:2 (Intel 82801BA-ICH2) via DMA
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Owner Module: 13
-# Volume: 0: 100% 1: 100%
-# Monitor of Sink: 3
-# Latency: 0 usec
-# Flags: 
-# 
-# *** Sink Input #3 ***
-# Name: TCP/IP client from 192.168.1.100:54832
-# Driver: pulsecore/protocol-simple.c
-# Owner Module: 8
-# Client: 0
-# Sink: 1
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Volume: 0: 100% 1: 100%
-# Buffer Latency: 0 usec
-# Sink Latency: 93605 usec
-# Resample method: auto
-# 
-# *** Sink Input #5 ***
-# Name: TCP/IP client from 192.168.1.100:55489
-# Driver: pulsecore/protocol-simple.c
-# Owner Module: 8
-# Client: 4
-# Sink: 3
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Volume: 0: 100% 1: 100%
-# Buffer Latency: 354965 usec
-# Sink Latency: 107940 usec
-# Resample method: auto
-# 
-# *** Sink Input #11 ***
-# Name: Simultaneous output on ALSA PCM on hw:0 (RIPTIDE) via DMA
-# Driver: modules/module-combine.c
-# Owner Module: 13
-# Client: n/a
-# Sink: 0
-# Sample Specification: s16le 2ch 44145Hz
-# Channel Map: front-left,front-right
-# Volume: 0: 100% 1: 100%
-# Buffer Latency: 7996 usec
-# Sink Latency: 99773 usec
-# Resample method: trivial
-# 
-# *** Sink Input #12 ***
-# Name: Simultaneous output on ALSA PCM on hw:1 (ES1371 DAC2/ADC) via DMA
-# Driver: modules/module-combine.c
-# Owner Module: 13
-# Client: n/a
-# Sink: 1
-# Sample Specification: s16le 2ch 44100Hz
-# Channel Map: front-left,front-right
-# Volume: 0: 100% 1: 100%
-# Buffer Latency: 0 usec
-# Sink Latency: 94693 usec
-# Resample method: trivial
-# 
-# *** Sink Input #13 ***
-# Name: Simultaneous output on ALSA PCM on hw:2 (Intel 82801BA-ICH2) via DMA
-# Driver: modules/module-combine.c
-# Owner Module: 13
-# Client: n/a
-# Sink: 2
-# Sample Specification: s16le 2ch 44077Hz
-# Channel Map: front-left,front-right
-# Volume: 0: 100% 1: 100%
-# Buffer Latency: 16062 usec
-# Sink Latency: 96235 usec
-# Resample method: trivial
-# 
-# *** Client #0 ***
-# Name: TCP/IP client from 192.168.1.100:54832
-# Driver: pulsecore/protocol-simple.c
-# Owner Module: 8
-# 
-# *** Client #4 ***
-# Name: TCP/IP client from 192.168.1.100:55489
-# Driver: pulsecore/protocol-simple.c
-# Owner Module: 8
-# 
-# *** Client #30 ***
-# Name: pactl
-# Driver: pulsecore/protocol-native.c
-# Owner Module: 7

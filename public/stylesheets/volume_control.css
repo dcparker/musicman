@@ -32,7 +32,7 @@
   float:left;
 }
 
-div#volume_slider {
+div#volume_slider, div.slider_bar {
 	position:relative;
   margin:10px;
   width:200px;
@@ -43,7 +43,7 @@ div#volume_slider {
   background-position:center center;
 }
 
-div#volume_handle {
+div#volume_handle, div.slider_handle {
   position:relative;
   height:23px;
   width:12px;

@@ -2,6 +2,8 @@ use_orm :datamapper
 use_test :rspec
 use_template_engine :haml
 
+dependency 'merb-helpers'
+
 Merb::Config.use { |c|
   c[:framework] = { :public => [Merb.root / "public", nil] }
   c[:session_store]       = 'none'
@@ -13,18 +15,6 @@ Merb::Config.use { |c|
 
 	c[:reload_classes]   = true
 	c[:reload_templates] = true
-}
-
-# App Config.
-MUSIC = {
-  :library_dir => '/Users/daniel/Music/iTunes/iTunes Music',
-  :ignore_list_file => 'ignore.list',
-  :sink_nicknames => {
-    'alsa_output.hw_0' => 'Downstairs',
-    'alsa_output.hw_1' => 'Upstairs',
-    'alsa_output.hw_2' => 'Downstairs Computer',
-    'combined' => 'Combined'
-  }
 }
 
 # Merb::BootLoader.after_app_loads do
@@ -105,9 +95,28 @@ class Musicman < Merb::Controller
   end
 
   def volume_get
-    "{'volume': #{Mixer.volume}}"
+    volume = case
+    when params[:sink_input]
+      PulseAudio.list.sink_input(:index => params[:sink_input]).volume
+    when params[:sink]
+      PulseAudio.list.sink('Name' => params[:sink]).volume
+    else
+      Mixer.volume
+    end.to_i
+    "{'volume': #{volume}}"
   end
   def volume_set
-    Mixer.volume(params[:volume].to_i).to_s
+    case
+    when params[:sink_input]
+      PulseAudio.list.sink_input(:index => params[:sink_input]).volume = params[:volume].to_i
+    when params[:sink]
+      PulseAudio.list.sink('Name' => params[:sink]).volume = params[:volume].to_i
+    else
+      Mixer.volume(params[:volume].to_i)
+    end.to_s
+  end
+
+  def move_sink_input
+    PulseAudio.list.client(:index => params[:client_index]).sink = params[:sink_name]
   end
 end

@@ -1,42 +1,14 @@
 %h2 Speakers
 - PulseAudio.list.sinks.each do |sink|
-  .sink= sink.name
+  .sink
+    %h4= sink.name
+    .sink_volume_slider{:sink_name => sink['Name']}
 %h2 Sources
 - PulseAudio.list.clients.each do |client|
-  .client== #{client.name} == #{client.sink.name}
-
-#now-playing
-  %h4#track_name
-  .floatleft
-    %span#elapsed{:style => 'font-family:arial;font-size:16pt'}
-  .floatleft
-    #track_slider
-      #track_handle
-  .floatleft
-    %span#remaining{:style => 'font-family:arial;font-size:16pt'}
-/ %script
-/   = "$().ready(function(){updatePlayingIndicator({'name':'#{Amarok.track_name}','position':'#{Amarok.track_position}','length':'#{Amarok.track_length}','elapsed':'#{Amarok.elapsed}','remaining':'#{Amarok.remaining}'})});"
-
-#volume{:style => 'clear:both'}
-  .floatleft
-    %span{:style => 'font-family:arial;font-size:16pt'} Volume:
-  .floatleft
-    #volume_slider
-      #volume_handle
-
-%hr{:style => 'clear:both'}
-
-#previous
-  %a{:href => "javascript:void(0)", :onclick => "$.get('/previous')"} Previous
-#play
-  %a{:href => "javascript:void(0)", :onclick => "$.get('/play')"} Play
-#pause
-  %a{:href => "javascript:void(0)", :onclick => "$.get('/pause')"} Pause
-#next
-  %a{:href => "javascript:void(0)", :onclick => "$.get('/next')"} Next
-
-#songs{:style => "clear:both"}
-  #song-search
-    Search:
-    %input#search{:type => 'search'}
-  #song-results
+  - next if client.network? && !client.active?
+  .client
+    %h4= client.nickname
+    = form(:action => '/move_sink_input', :method => :post) do
+      %input{:type => 'hidden', :name => 'client_index', :value => client.index}
+      = select(:name => 'sink_name', :selected => client.sink['Name'], :collection => MUSIC[:sink_nicknames].to_a, :value_method => :first, :text_method => :last, :onchange => '$(this.form).ajaxSubmit();')
+    .client_volume_slider{:sink_input_index => client.sink.index}

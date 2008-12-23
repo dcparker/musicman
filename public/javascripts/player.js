@@ -1,29 +1,98 @@
-//    *****   VOLUME   *****
-// Gets the current volume and sets up the volume slider.
+// Creates the volume sliders
+// .volume_slider{:style => 'clear:both'}
+//   .floatleft
+//     %span{:style => 'font-family:arial;font-size:16pt'} Volume:
+//   .floatleft
+//     .slider_bar
+//       .slider_handle
 $().ready(function(){
-  $.getJSON("/volume_get", function(mixer){
-    $("div#volume_slider").slider({
-      handle: 'div#volume_handle',
+  $('div.sink_volume_slider').volume_slider(function(){
+    var $slider = this;
+    return {
+      url: "/volume_get?sink="+$slider.attr('sink_name'),
       stop: function(event, ui){
-        $.get("/volume_set?volume="+ui.value);
+        $.ajax({
+          url:'/volume_set',
+          data:{
+            volume : ui.value,
+            sink : $slider.attr('sink_name')
+          },
+          type:'GET'
+        });
       },
       slide: function(event, ui){
-        $.get("/volume_set?volume="+ui.value);
-      },
-      startValue: mixer.volume
-    });
+        $.ajax({
+          url:'/volume_set',
+          data:{
+            volume : ui.value,
+            sink : $slider.attr('sink_name')
+          },
+          type:'GET'
+        });
+      }
+    };
   });
 
-  $('#song-search input#search').keyup(function(){
-    $.ajax({
-      url: "/search",
-      data: {'q': this.value},
-      cache: false,
-      success: function(html){
-        $("#song-results").html(html);
+  $('div.client_volume_slider').volume_slider(function(){
+    var $slider = this;
+    return {
+      url: "/volume_get?sink_input="+$slider.attr('sink_input_index'),
+      stop: function(event, ui){
+        $.ajax({
+          url:'/volume_set',
+          data:{
+            volume : ui.value,
+            sink_input : $slider.attr('sink_input_index')
+          },
+          type:'GET'
+        });
+      },
+      slide: function(event, ui){
+        $.ajax({
+          url:'/volume_set',
+          data:{
+            volume : ui.value,
+            sink_input : $slider.attr('sink_input_index')
+          },
+          type:'GET'
+        });
       }
+    };
+  });
+});
+
+$.fn.volume_slider = function(options_function){
+  this.each(function(){
+    var $slider = $(this);
+    $slider.append("<div class='floatleft'><span>Volume:</span></div><div class='floatleft'><div class='slider_bar'><div class='slider_handle'></div></div></div>");
+    var options = options_function.call($slider);
+    $.getJSON(options.url, function(mixer){
+      options.handle = $slider.find('div.slider_bar > div.slider_handle');
+      options.startValue = mixer.volume;
+      $slider.find('div.slider_bar').slider(options);
     });
   });
+};
+
+// Initialize the live search.
+$().ready(function(){
+// This is what the search section looked like:
+// #songs{:style => "clear:both"}
+//   #song-search
+//     Search:
+//     %input#search{:type => 'search'}
+//   #song-results
+
+  // $('#song-search input#search').keyup(function(){
+  //   $.ajax({
+  //     url: "/search",
+  //     data: {'q': this.value},
+  //     cache: false,
+  //     success: function(html){
+  //       $("#song-results").html(html);
+  //     }
+  //   });
+  // });
 });
 
 
@@ -75,6 +144,17 @@ function getNowPlayingUpdate(){
   }
   return now;
 }
+
+// This is what the now-playing slider looked like:
+// #now-playing
+//   %h4#track_name
+//   .floatleft
+//     %span#elapsed{:style => 'font-family:arial;font-size:16pt'}
+//   .floatleft
+//     #track_slider
+//       #track_handle
+//   .floatleft
+//     %span#remaining{:style => 'font-family:arial;font-size:16pt'}
 
 // $().ready(function(){
 //   player.active = (new Date()).getTime();
