@@ -39,6 +39,15 @@ class PulseAudio
     sinks.select {|s| s[key] == val}[0]
   end
 
+  def sink_inputs
+    @items['Sink Input']
+  end
+  def sink_input(atr={})
+    key = atr.keys[0]
+    val = atr.values[0]
+    sink_inputs.select {|s| s[key] == val}[0]
+  end
+
   def clients
     @items['Client']
   end
