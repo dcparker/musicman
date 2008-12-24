@@ -190,7 +190,7 @@ class PulseAudio
     end
 
     def sink_input
-      PulseAudio.list.sink_input('Name' => @name)
+      PulseAudio.list.sink_input('Client' => index)
     end
 
     def sink=(sink_name)
@@ -198,7 +198,7 @@ class PulseAudio
     end
 
     def network?
-      sink_input && sink_input.module.name == 'module-simple-protocol-tcp'
+      sink_input.module.name == 'module-simple-protocol-tcp'
     end
 
     def active?
