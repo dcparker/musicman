@@ -96,8 +96,8 @@ class Musicman < Merb::Controller
 
   def volume_get
     volume = case
-    when params[:sink_input]
-      PulseAudio.list.sink_input(:index => params[:sink_input]).volume
+    when params[:sink_input_index]
+      PulseAudio.list.sink_input(:index => params[:sink_input_index].to_s).volume
     when params[:sink]
       PulseAudio.list.sink('Name' => params[:sink]).volume
     else
@@ -107,8 +107,8 @@ class Musicman < Merb::Controller
   end
   def volume_set
     case
-    when params[:sink_input]
-      PulseAudio.list.sink_input(:index => params[:sink_input]).volume = params[:volume].to_i
+    when params[:sink_input_index]
+      PulseAudio.list.sink_input(:index => params[:sink_input_index].to_s).volume = params[:volume].to_i
     when params[:sink]
       PulseAudio.list.sink('Name' => params[:sink]).volume = params[:volume].to_i
     else

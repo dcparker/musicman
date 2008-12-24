@@ -36,13 +36,13 @@ $().ready(function(){
   $('div.client_volume_slider').volume_slider(function(){
     var $slider = this;
     return {
-      url: "/volume_get?sink_input="+$slider.attr('sink_input_index'),
+      url: "/volume_get?sink_input_index="+$slider.attr('sink_input_index'),
       stop: function(event, ui){
         $.ajax({
           url:'/volume_set',
           data:{
             volume : ui.value,
-            sink_input : $slider.attr('sink_input_index')
+            sink_input_index : $slider.attr('sink_input_index')
           },
           type:'GET'
         });
@@ -52,7 +52,7 @@ $().ready(function(){
           url:'/volume_set',
           data:{
             volume : ui.value,
-            sink_input : $slider.attr('sink_input_index')
+            sink_input_index : $slider.attr('sink_input_index')
           },
           type:'GET'
         });
