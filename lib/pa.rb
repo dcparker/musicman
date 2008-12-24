@@ -140,7 +140,7 @@ class PulseAudio
       @name = sink_input_attrs['Name']
       @client = sink_input_attrs['Client']
       @sink = sink_input_attrs['Sink']
-      @volume = sink_input_attrs['Volume']
+      @volume = sink_input_attrs['Volume'].split(/:?%? +/)[1]
     end
 
     def client
