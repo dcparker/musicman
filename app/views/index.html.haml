@@ -11,4 +11,4 @@
     = form(:action => '/move_sink_input', :method => :post) do
       %input{:type => 'hidden', :name => 'client_index', :value => client.index}
       = select(:name => 'sink_name', :selected => client.sink['Name'], :collection => MUSIC[:sink_nicknames].to_a, :value_method => :first, :text_method => :last, :onchange => '$(this.form).ajaxSubmit();')
-    .client_volume_slider{:sink_input_index => client.sink.index}
+    .client_volume_slider{:sink_input_index => client.sink_input.index}
