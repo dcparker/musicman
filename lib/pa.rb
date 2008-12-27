@@ -130,7 +130,7 @@ class PulseAudio
       if defined?(MUSIC)
         nick = nil
         MUSIC[:sink_nicknames].each do |sink_nickname|
-          if @name =~ sink_nickname.keys[0]
+          if @description =~ sink_nickname.keys[0]
             nick = sink_nickname.values[0]
             nick = nick % $~[1..$~.size] if $~.size > 1
             break
