@@ -1,12 +1,16 @@
 MUSIC = {
   :library_dir => '/Users/daniel/Music/iTunes/iTunes Music',
   :ignore_list_file => 'ignore.list',
-  :sink_nicknames => {
-    'alsa_output.hw_0' => 'Downstairs',
-    'alsa_output.hw_1' => 'Upstairs',
-    'alsa_output.hw_2' => 'Downstairs Computer',
-    'combined' => 'Combined'
-  },
+  :sink_nicknames => [
+    {
+      /Simultaneous/ => 'Combined'},
+    {
+      /\(RIPTIDE\)/ => 'Downstairs'},
+    {
+      /\(ES1371 DAC2\/ADC\)/ => 'Upstairs'},
+    {
+      /\(Intel 82801BA-ICH2\)/ => 'Downstairs Computer'}
+  ],
   :client_nicknames => [
     {
       /TCP\/IP client from 192.168.1.100/ => 'Fenestra'},
@@ -124,7 +128,15 @@ class PulseAudio
 
     def name
       if defined?(MUSIC)
-        MUSIC[:sink_nicknames][@name]
+        nick = nil
+        MUSIC[:sink_nicknames].each do |sink_nickname|
+          if @name =~ sink_nickname.keys[0]
+            nick = sink_nickname.values[0]
+            nick = nick % $~[1..$~.size] if $~.size > 1
+            break
+          end
+        end
+        nick || @name
       else
         @name
       end
