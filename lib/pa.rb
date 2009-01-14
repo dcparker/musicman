@@ -210,7 +210,7 @@ class PulseAudio
     end
 
     def network?
-      sink_input.module.name == 'module-simple-protocol-tcp'
+      sink_input && sink_input.module.name == 'module-simple-protocol-tcp'
     end
 
     def active?
