@@ -4,7 +4,7 @@
     %h4= sink.name
     .sink_volume_slider{:sink_name => sink['Name']}
 %h2 Sources
-- PulseAudio.list.clients.each do |client|
+- PulseAudio.list.clients.select {|c| c.sink_input}.each do |client|
   - next if client.network? && !client.active?
   .client
     %h4= client.nickname
