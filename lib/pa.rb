@@ -198,7 +198,7 @@ class PulseAudio
     end
 
     def sink
-      sink_input.sink
+      sink_input ? sink_input.sink : nil
     end
 
     def sink_input
@@ -214,7 +214,7 @@ class PulseAudio
     end
 
     def active?
-      sink_input.active?
+      sink_input && sink_input.active?
     end
   end
 end
