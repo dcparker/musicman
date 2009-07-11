@@ -161,6 +161,14 @@ class PulseAudio
       @client = sink_input_attrs['Client']
       @sink = sink_input_attrs['Sink']
       @volume = sink_input_attrs['Volume'].split(/:?%? +/)[1]
+      MUSIC[:client_nicknames].each do |client_nickname|
+        if @name =~ client_nickname.keys[0]
+          nick = client_nickname.values[0]
+          nick = nick % $~[1..$~.size] if $~.size > 1
+          @attrs[:nickname] = nick
+          break
+        end
+      end
     end
 
     def client
