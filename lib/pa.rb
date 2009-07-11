@@ -116,6 +116,14 @@ class PulseAudio
       @name = sink_attrs['Name']
       @description = sink_attrs['Description']
       @volume = sink_attrs['Volume'].split(/:?%? +/)[1]
+      MUSIC[:sink_nicknames].each do |sink_nickname|
+        if @description =~ sink_nickname.keys[0]
+          nick = sink_nickname.values[0]
+          nick = nick % $~[1..$~.size] if $~.size > 1
+          @attrs[:nickname] = nick
+          break
+        end
+      end
     end
 
     def module
