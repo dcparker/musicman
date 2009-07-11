@@ -33,3 +33,14 @@ task :default => 'spec'
 # ADD YOUR CUSTOM TASKS IN /lib/tasks
 # NAME YOUR RAKE FILES file_name.rake
 ##############################################################################
+task :start do
+  system "merb -p 6874 -I musicman.rb -d"
+end
+
+task :stop do
+  system "merb -K all"
+end
+
+task :restart => :stop do
+  system "merb -p 6874 -I musicman.rb -d"
+end
