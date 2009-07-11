@@ -191,6 +191,14 @@ class PulseAudio
     def initialize(client_attrs)
       @attrs = client_attrs
       @name = client_attrs['Name']
+      MUSIC[:client_nicknames].each do |client_nickname|
+        if @name =~ client_nickname.keys[0]
+          nick = client_nickname.values[0]
+          nick = nick % $~[1..$~.size] if $~.size > 1
+          @attrs[:nickname] = nick
+          break
+        end
+      end
     end
 
     def nickname
