@@ -15,7 +15,7 @@ MUSIC = {
     {
       /TCP\/IP client from 192.168.1.100/ => 'Fenestra'},
     {
-      /TCP\/IP client from ([\d\.]+)/ => 'Other Computer: %s'}
+      /TCP\/IP client from ([\d\.]+)/ => 'Streaming from %s'}
   ]
 }
 
