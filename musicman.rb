@@ -123,7 +123,7 @@ class Musicman < Merb::Controller
   def move_sink_input
     case
     when params[:name]
-      PulseAudio.list.client(:nickname => params[:nickname]).sink = params[:sink_name]
+      PulseAudio.list.client(:nickname => params[:name]).sink = params[:sink_name]
     when params[:client_index]
       PulseAudio.list.client(:index => params[:client_index]).sink = params[:sink_name]
     end
