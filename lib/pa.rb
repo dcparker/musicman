@@ -228,7 +228,7 @@ class PulseAudio
     end
 
     def sink=(sink_name)
-      `pactl move-sink-input #{sink_input.index} #{PulseAudio.list.sink('Name' => sink_name).index}`
+      `pactl move-sink-input #{sink_input.index} #{(PulseAudio.list.sink('Name' => sink_name) || PulseAudio.list.sink(:nickname => sink_name)).index}`
     end
 
     def network?
