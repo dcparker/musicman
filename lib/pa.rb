@@ -41,7 +41,7 @@ class PulseAudio
   end
 
   def modules
-    @items['Module'].collect {|m| PAModule.new(m)}
+    (@items['Module'] || []).collect {|m| PAModule.new(m)}
   end
   def module(atr={})
     key = atr.keys[0]
@@ -50,7 +50,7 @@ class PulseAudio
   end
 
   def sinks
-    @items['Sink'].collect {|s| Sink.new(s)}
+    (@items['Sink'] || []).collect {|s| Sink.new(s)}
   end
   def sink(atr={})
     key = atr.keys[0]
@@ -59,7 +59,7 @@ class PulseAudio
   end
 
   def sink_inputs
-    @items['Sink Input'].collect {|s| SinkInput.new(s)}
+    (@items['Sink Input'] || []).collect {|s| SinkInput.new(s)}
   end
   def sink_input(atr={})
     key = atr.keys[0]
@@ -68,7 +68,7 @@ class PulseAudio
   end
 
   def clients
-    @items['Client'].collect {|c| Client.new(c)}.reject {|c| c.name == 'pactl'}
+    (@items['Client'] || []).collect {|c| Client.new(c)}.reject {|c| c.name == 'pactl'}
   end
   def client(atr={})
     key = atr.keys[0]
